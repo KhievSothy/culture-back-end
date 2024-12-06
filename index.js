@@ -7,9 +7,9 @@ const passport = require('passport');
 const { logger, handleError, verifyJWT, handleValidation, } = require('./src/middlewares/index.js')
 
 const dbConnect = require('./src/db/db.js')
-const bookRouter = require('./src/routes/book.js')
+const eventRouter = require('./src/routes/event.js')
 const userRouter = require('./src/routes/user.js')
-const courseRouter = require('./src/routes/course.js')
+const siteRouter = require('./src/routes/site.js')
 const authRouter = require('./src/routes/auth.js');
 const jwtStrategy = require('./src/common/strategy/jwt.js');
 const redisClient = require('./src/redis/index.js');
@@ -31,8 +31,8 @@ app.use('/auth', authRouter)
 
 
 // Router
-app.use('/courses', passport.authenticate('jwt', { session: false }), courseRouter)
-app.use('/books', verifyJWT, bookRouter)
+app.use('/sites', passport.authenticate('jwt', { session: false }), siteRouter)
+app.use('/events', verifyJWT, eventRouter)
 app.use('/users', verifyJWT, userRouter)
 app.use('/files', fileRouter)
 
