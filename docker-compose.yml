@@ -21,7 +21,7 @@ services:
     volumes:
       - mongodbdata:/data/db
   redis:
-    image: redis:5
+    image: redis:latest
     container_name: cadt-redis
     ports:
       - 6379:6379
