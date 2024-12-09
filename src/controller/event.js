@@ -7,7 +7,7 @@ const EventModel = require('../models/event.js')
  */
 
 const createEvent = asyncHandler(async (req, res) => {
-    const event = new BookModel(req.body)
+    const event = new EventModel(req.body)
     const result = await event.save()
     return res.json(result)
 })

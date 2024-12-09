@@ -25,7 +25,7 @@ const getSites = asyncHandler(async (req, res) => {
     if (!result) {
         // Query operation takes time
         console.log("Consuming Time")
-        const sites = await CourseModel.find()
+        const sites = await SiteModel.find()
         redisClient.set(key, JSON.stringify(sites), {
             EX: 30
         })
@@ -45,7 +45,7 @@ const deleteSitebyId = asyncHandler(async (req, res) => {
 const updateSiteById = asyncHandler(async (req, res) => {
     const id = req.params.id
     const result = await SiteModel.updateOne({ _id: id }, req.body)
-    // const result = await CourseModel.findByIdAndUpdate(id, req.body)
+    // const result = await SiteModel.findByIdAndUpdate(id, req.body)
     return res.json(result)
 })
 

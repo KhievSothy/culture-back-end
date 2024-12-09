@@ -40,7 +40,7 @@ function handleError(error, req, res, next) {
 
 function checkId(req, res, next) {
     const id = req.params.id
-    const course = courses.find((item) => {
+    const site = sites.find((item) => {
         return item.id == id
     })
     if (!course) {
