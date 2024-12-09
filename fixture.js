@@ -1,31 +1,30 @@
 require('dotenv').config()
 
 const dbConnect = require('./src/db/db.js')
-const CourseModel = require('./src/models/course.js')
+const SiteModel = require('./src/models/site.js')
 const { faker } = require('@faker-js/faker');
 const UserModel = require('./src/models/user.js');
-const BookModel = require('./src/models/book.js');
+const EventModel = require('./src/models/event.js');
 
 dbConnect().catch((err) => {
     console.log(err)
 })
 
-const numberOfCourse = 1000
-const numberOfUsers = 100
-const numberOfBooks = 500
+const numberOfSites = 20
+const numberOfUsers = 20
+const numberOfEvents = 20
 
 console.log(Date.now())
 
 async function generate() {
-    for (let i = 0; i < numberOfCourse; i++) {
-        const newCourse = new CourseModel({
-            price: faker.commerce.price(),
-            title: faker.lorem.sentence(5),
-            category: faker.music.genre(),
-            author: faker.person.fullName()
+    for (let i = 0; i < numberOfSites; i++) {
+        const newSite = new SiteModel({
+            title: faker.lorem.sentence({ min: 3, max: 5 }),
+            category: faker.lorem.sentence({ min: 1, max: 3 }),
+            description: faker.lorem.paragraph(),
         })
-        const result = await newCourse.save()
-        console.log(`${i} - Course with id: ${result._id} generated`)
+        const result = await newSite.save()
+        console.log(`${i} - Site with id: ${result._id} generated`)
     }
 
     let usersList = []
@@ -43,17 +42,16 @@ async function generate() {
         console.log(`${i} - User with id: ${result._id} generated`)
     }
 
-    for (let i = 0; i < numberOfBooks; i++) {
+    for (let i = 0; i < numberOfEvents; i++) {
         const randomId = usersList[Math.floor(Math.random() * usersList.length)]
-        const newBook = new BookModel({
-            author: randomId,
-            page: faker.number.int({ max: 500 }),
+        const newEvent = new EventModel({
+            title: faker.lorem.sentence({ min: 3, max: 5 }),
+            category: faker.lorem.sentence({ min: 1, max: 3 }),
             description: faker.lorem.paragraph(),
-            genre: faker.lorem.word(),
-            title: faker.lorem.sentence({ min: 3, max: 5 })
+            
         })
-        const result = await newBook.save()
-        console.log(`${i} - Book with id: ${result._id} generated`)
+        const result = await newEvent.save()
+        console.log(`${i} - Event with id: ${result._id} generated`)
     }
 }
 generate()
