@@ -11,6 +11,9 @@ services:
       - ./index.js:/app/index.js
       - .env:/app/.env
       - ./uploads:/app/uploads
+    depends_on:
+      - mongodb
+      - redis
   mongodb:
     build:
       context: .
@@ -30,7 +33,7 @@ services:
     environment:
       - REDIS_HOSTS=local:cadt-redis:6379
     ports:
-      - "8082:8081"
+      - "8081:8081"
     depends_on:
       - redis
 volumes:

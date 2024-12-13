@@ -1,7 +1,7 @@
 
 const asyncHandler = require('express-async-handler')
 const EventModel = require('../models/event.js')
-
+const redisClient = require('../redis/index.js')
 /**
  * Controller is a specific function to handle specific tasks
  */

@@ -24,8 +24,6 @@ const signUp = asyncHandler(async (req, res) => {
 })
 
 const login = asyncHandler(async (req, res) => {
-
-
     const { email, password } = req.body
     const user = await UserModel.findOne({ email: email })
     // SSO Logics

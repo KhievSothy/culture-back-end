@@ -2,11 +2,11 @@ const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
 const { validationResult } = require('express-validator');
-
+const { responseHandler } = require('express-intercept');
+const redisClient = require('../redis');
 // File Upload
 const multer = require('multer');
 const path = require('path')
-
 const verifyJWT = asyncHandler(async (req, res, next) => {
     const token = req.headers.authorization
     if (!token) {
@@ -73,13 +73,50 @@ const singleUpload = multer({
     },
 }).single('file')
 
+const catchInterceptor = (ttl) => responseHandler().for(req => {
+    return req.method == "GET"
+}).if(res => {
+    const codes = [200, 201, 202, 203, 204]
+    return codes.includes(res.statusCode)
+}).getString(async (body, req, res) => {
+    const { originalUrl } = res.req
+    //console.log("Called")
+    redisClient.set(originalUrl, body, {
+        EX: ttl
+    })
+})
+
+const invalidateInterceptor = responseHandler().for(req => {
+    const methods = ["POST", "PUT", "PATCH", "DELETE"]
+    return methods.includes(req.method)
+}).if(res => {
+    const codes = [200, 201, 202, 203, 204]
+    return codes.includes(res.statusCode)
+}).getString(async (body, req, res) => {
+    const { baseUrl } = req
+    console.log(baseUrl)
+    const keys = await redisClient.keys(`${baseUrl}*`)
+    console.log(keys)
+    redisClient.del(keys[0])
+})
+
+const catchMiddleware = asyncHandler(async (req, res, next) => {
+    const { originalUrl } = req
+    if (req.method == "GET") {
+        const data = await redisClient.get(originalUrl)
+        if (data !== null) {
+            return res.json(JSON.parse(data))
+        }
+    }
+    next()
+})
 module.exports = {
     handleError,
     logger,
     verifyJWT,
     handleValidation,
-//    cacheInterceptor,
-//    cacheMiddleware,
-//    invalidateInterceptor,
+    catchInterceptor,
+    catchMiddleware,
+    invalidateInterceptor,
     singleUpload
 }
