@@ -3,8 +3,7 @@ require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const passport = require('passport');
-const { 
-    logger, handleError, verifyJWT, handleValidation, catchMiddleware, catchInterceptor, invalidateInterceptor 
+const { handleError, catchMiddleware, catchInterceptor, invalidateInterceptor 
 } = require('./src/middlewares/index.js')
 
 const dbConnect = require('./src/db/db.js')
@@ -20,9 +19,7 @@ const setupSwagger = require('./swagger/index.js');
 const app = express()
 
 
-dbConnect().catch((err) => {
-    console.log(err)
-})
+dbConnect().catch((err) => {console.log(err)})
 redisClient.connect()
 passport.use(jwtStrategy)
 
