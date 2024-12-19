@@ -1,12 +1,14 @@
 const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken');
-const UserModel = require('../models/user');
 const { validationResult } = require('express-validator');
 const { responseHandler } = require('express-intercept');
-const redisClient = require('../redis');
 // File Upload
 const multer = require('multer');
 const path = require('path')
+const redisClient = require('../redis');
+const UserModel = require('../models/user');
+const { roles } = require('../models/permission');
+
 const verifyJWT = asyncHandler(async (req, res, next) => {
     const token = req.headers.authorization
     if (!token) {
@@ -18,6 +20,23 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
 })
+const verifyRefresh = asyncHandler(async (req, res, next) => {
+    const token = req.headers.authorization;
+    console.log(token);
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication failed' });
+    }
+    const extract = token.split(' ')[1];
+    const decoded = jwt.verify(extract, process.env.JWT_REFRESH_SECRET);
+    const user = await UserModel.findById(decoded.id);
+    // console.log(user)
+    req.user = { ...user._doc, extract };
+    // console.log(req.user)
+    next();
+  });
+
+
+
 function logger(req, res, next) {
     // console.log(req)
     console.log("Incoming request", req.rawHeaders[3])
@@ -52,7 +71,7 @@ function checkId(req, res, next) {
 }
 
 function handleValidation(req, res, next) {
-    console.log("Hello")
+    //console.log("Hello")
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
@@ -60,18 +79,6 @@ function handleValidation(req, res, next) {
     next()
 }
 
-const storage = multer.diskStorage({
-    destination: './uploads',
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
-    },
-})
-const singleUpload = multer({
-    storage: storage,
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
-    },
-}).single('file')
 
 const catchInterceptor = (ttl) => responseHandler().for(req => {
     return req.method == "GET"
@@ -85,6 +92,7 @@ const catchInterceptor = (ttl) => responseHandler().for(req => {
         EX: ttl
     })
 })
+
 
 const invalidateInterceptor = responseHandler().for(req => {
     const methods = ["POST", "PUT", "PATCH", "DELETE"]
@@ -110,13 +118,69 @@ const catchMiddleware = asyncHandler(async (req, res, next) => {
     }
     next()
 })
+
+const storage = multer.diskStorage({
+    destination: './uploads',
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    },
+})
+
+const singleUpload = multer({
+    storage: storage,
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    },
+}).single('file')
+
+const multipleUploads = multer({
+    storage,
+    fileFilter (req, file, cb) {
+      checkFileType(file, cb);
+    },
+  }).array('files');
+  
+  // Check file type
+  function checkFileType(file, cb) {
+    // Allowed ext
+    const filetypes = /jpeg|jpg|png|gif|pdf/;
+    // Check ext
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime
+    const mimetype = filetypes.test(file.mimetype);
+  
+    if (mimetype && extname) {
+      return cb(null, true);
+    } 
+      cb(new Error('Error: Images Only!'), false);
+    
+  }
+  
+  const checkRole = (action, role) => {
+    console.log(roles[role].permissions);
+    return roles[role].permissions.includes(action);
+  };
+  
+  const permission = (action) =>
+    asyncHandler((req, res, next) => {
+      const {user} = req;
+      if (!checkRole(action, user.permission)) {
+        return res.json({ msg: 'Unauthorized' });
+      }
+      next();
+    });
+
+
 module.exports = {
     handleError,
     logger,
     verifyJWT,
+    verifyRefresh,
     handleValidation,
     catchInterceptor,
     catchMiddleware,
     invalidateInterceptor,
-    singleUpload
+    singleUpload,
+    multipleUploads,
+    permission
 }

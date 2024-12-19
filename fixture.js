@@ -5,6 +5,7 @@ const SiteModel = require('./src/models/site.js')
 const { faker } = require('@faker-js/faker');
 const UserModel = require('./src/models/user.js');
 const EventModel = require('./src/models/event.js');
+const FileModel = require('./src/models/file.js');
 
 dbConnect().catch((err) => {
     console.log(err)
@@ -13,6 +14,7 @@ dbConnect().catch((err) => {
 const numberOfSites = 20
 const numberOfUsers = 20
 const numberOfEvents = 20
+const numberOfFiles = 20
 
 console.log(Date.now())
 
