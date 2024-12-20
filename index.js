@@ -3,9 +3,10 @@ require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const passport = require('passport');
-const { handleError, catchMiddleware, catchInterceptor, invalidateInterceptor 
-} = require('./src/middlewares/index.js')
-
+const rateLimit = require('express-rate-limit')
+const { RedisStore } = require('rate-limit-redis')
+const { handleError, catchMiddleware, catchInterceptor, invalidateInterceptor } 
+= require('./src/middlewares/index.js')
 const dbConnect = require('./src/db/db.js')
 const eventRouter = require('./src/routes/event.js')
 const userRouter = require('./src/routes/user.js')
@@ -21,12 +22,34 @@ const app = express()
 
 dbConnect().catch((err) => {console.log(err)})
 redisClient.connect()
+
+const limiter = rateLimit({
+    store: new RedisStore({
+        sendCommand: (...args) => redisClient.sendCommand(args),
+    }),
+    windowMs: 1 * 60 * 1000, // 1 minutes
+    max: 30, // Limit each IP to 100 requests per windowMs
+    message: { msg: 'Too many requests from this IP, please try again later.' },
+})
+// console.log("Restart")
+const loginLimit = rateLimit({
+    store: new RedisStore({
+        sendCommand: (...args) => redisClient.sendCommand(args),
+    }),
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 5, // Limit each IP to 100 requests per windowMs
+    message: { msg: 'Too many login attampt' },
+})
+
+
 passport.use(jwtStrategy)
 
 // app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
 // app.use(logger)
 app.use('/auth', authRouter)
+app.use('/auth', loginLimit, authRouter)
+app.use(limiter)
 app.use('/files',passport.authenticate('jwt', { session: false }), fileRouter)
 app.use(catchMiddleware)
 app.use(catchInterceptor(30 * 60))

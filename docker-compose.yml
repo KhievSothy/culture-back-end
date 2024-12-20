@@ -8,11 +8,9 @@ services:
       - express
     environment:
       - NGINX_SERVER_NAME=localhost
-      - EXPRESS_HOST_1=express-culture-1
-      - EXPRESS_HOST_2=express-culture-2
-      - EXPRESS_HOST_3=express-culture-3
-      - EXPRESS_HOST_4=express-culture-4
-      - EXPRESS_HOST_5=express-culture-5
+      - EXPRESS_HOST_1=culture-back-end-express-1
+      - EXPRESS_HOST_2=culture-back-end-express-2
+      - EXPRESS_HOST_3=culture-back-end-express-3
       - EXPRESS_PORT=3000
       - NGINX_MAX_BODY=100M
     ports:
@@ -29,6 +27,7 @@ services:
       - ./index.js:/app/index.js
       - .env:/app/.env
       - ./uploads:/app/uploads
+    scale: 3
     depends_on:
       - mongodb
       - redis
@@ -46,13 +45,13 @@ services:
     container_name: cadt-redis
     ports:
       - 6379:6379
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    environment:
-      - REDIS_HOSTS=local:cadt-redis:6379
-    ports:
-      - "8081:8081"
-    depends_on:
-      - redis
+  # redis-commander:
+  #   image: rediscommander/redis-commander:latest
+  #   environment:
+  #     - REDIS_HOSTS=local:cadt-redis:6379
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     - redis
 volumes:
   mongodbdata:
