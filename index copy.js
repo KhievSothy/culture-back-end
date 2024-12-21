@@ -16,7 +16,7 @@ const jwtStrategy = require('./src/common/strategy/jwt.js');
 const redisClient = require('./src/redis/index.js');
 const fileRouter = require('./src/routes/file.js');
 const setupSwagger = require('./swagger/index.js');
-const cors = require('cors');
+//const cors = require('cors');
 const app = express()
 
 
@@ -54,7 +54,6 @@ app.use('/files',passport.authenticate('jwt', { session: false }), fileRouter)
 app.use(catchMiddleware)
 app.use(catchInterceptor(30 * 60))
 app.use(invalidateInterceptor)
-app.use(cors());
 //app.get('/sites', (req, res) => {res.json({ message: 'CORS enabled!' });});
 
 // Router
