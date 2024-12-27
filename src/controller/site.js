@@ -18,20 +18,6 @@ const getSiteById = asyncHandler(async (req, res) => {
     return res.json(site)
 })
 
-//const getSites = asyncHandler(async (req, res) => {
-//    const key = '/sites'
-//    const result = await redisClient.get(key)
-//    if (!result) {
-//        console.log("Consuming Time")
-//        const sites = await SiteModel.find()
-//        redisClient.set(key, JSON.stringify(sites), {
-//            EX: 30
-//        })
-//        return res.json(sites)
-//    }
-//    const site = JSON.parse(result)
-//    return res.json(site)
-//})
 
 const getSites = asyncHandler(async (req, res) => {
     const { join } = req.query
