@@ -12,3 +12,4 @@ const fileSchema = new mongoose.Schema({
     etag: {type: String}
 })
 const FileModel = mongoose.model('Files', fileSchema)
+module.exports = FileModel

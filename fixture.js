@@ -14,16 +14,18 @@ dbConnect().catch((err) => {
 const numberOfSites = 20
 const numberOfUsers = 20
 const numberOfEvents = 20
-const numberOfFiles = 20
 
 console.log(Date.now())
 
 async function generate() {
     for (let i = 0; i < numberOfSites; i++) {
         const newSite = new SiteModel({
-            title: faker.lorem.sentence({ min: 3, max: 5 }),
-            category: faker.lorem.sentence({ min: 1, max: 3 }),
-            description: faker.lorem.paragraph(),
+            title_kh: faker.lorem.sentence({ min: 3, max: 5 }),
+            title_en: faker.lorem.sentence({ min: 3, max: 5 }),
+            is_enable: true,
+            desc_kh: faker.lorem.paragraph(),
+            desc_en: faker.lorem.paragraph(),
+            img: '',
         })
         const result = await newSite.save()
         console.log(`${i} - Site with id: ${result._id} generated`)
@@ -45,7 +47,7 @@ async function generate() {
     }
 
     for (let i = 0; i < numberOfEvents; i++) {
-        const randomId = usersList[Math.floor(Math.random() * usersList.length)]
+        //const randomId = usersList[Math.floor(Math.random() * usersList.length)]
         const newEvent = new EventModel({
             title: faker.lorem.sentence({ min: 3, max: 5 }),
             category: faker.lorem.sentence({ min: 1, max: 3 }),
