@@ -67,8 +67,6 @@ app.use('/users', passport.authenticate('jwt', { session: false }), userRouter)
 app.use('/arts', passport.authenticate('jwt', { session: false }), artRouter)
 app.use('/museums', passport.authenticate('jwt', { session: false }), museumRouter)
 
-
-
 app.use(handleError)
 
 setupSwagger(app)

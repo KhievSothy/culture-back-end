@@ -36,7 +36,7 @@ const options = {
 
 
 function setupSwagger(app) {
-    swagger.serveSwagger(app, "/docs", options, { routePath: './src/routes/', requestModelPath: './src/models/request', responseModelPath: './src/models/response' })
+    swagger.serveSwagger(app, "/culture_docs", options, { routePath: './src/routes/', requestModelPath: './src/models/request', responseModelPath: './src/models/response' })
 }
 
 module.exports = setupSwagger
