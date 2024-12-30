@@ -56,6 +56,7 @@ app.use(bodyParser.json());
 
 //cors config before route
 const allowedOrigins = [
+  "http://localhost",
   "http://localhost:8080",
   "https://cambodiaculturalheritage.netlify.app",
   "http://localhost:3000",
@@ -107,7 +108,6 @@ app.use(
 app.use("/uploads", express.static("uploads"));
 
 app.use(handleError);
-
 setupSwagger(app);
 
 app.listen(process.env.PORT, function () {
