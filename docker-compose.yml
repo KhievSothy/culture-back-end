@@ -12,7 +12,7 @@ services:
       DB_SERVER: db
       DB_NAME: cultural_heritage
       CACHE_SERVER: redis
-      IS_PRODUCTION: true
+      IS_PRODUCTION: "true"
     ports:
       - "3001:3000"
     networks:
