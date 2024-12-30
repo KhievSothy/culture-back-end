@@ -97,7 +97,7 @@ app.use(invalidateInterceptor);
 //app.get('/sites', (req, res) => {res.json({ message: 'CORS enabled!' });});
 
 // Router
-app.use("/sites", passport.authenticate("jwt", { session: false }), siteRouter);
+// app.use("/sites", passport.authenticate("jwt", { session: false }), siteRouter);
 app.use(
   "/events",
   passport.authenticate("jwt", { session: false }),
@@ -110,11 +110,7 @@ app.use(
   passport.authenticate("jwt", { session: false }),
   museumRouter
 );
-app.use(
-  "/historical_sites",
-  passport.authenticate("jwt", { session: false }),
-  siteRouter
-);
+app.use("/historical_sites", siteRouter);
 
 app.use("/uploads", express.static("uploads"));
 

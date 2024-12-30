@@ -57,9 +57,7 @@ const getSites = asyncHandler(async (req, res) => {
  * Get enabled sites.
  */
 const getEnabledSites = asyncHandler(async (req, res) => {
-  const sites = await HistoricSiteModel.find()
-    .populate("join")
-    .where({ is_enable: true });
+  const sites = await HistoricSiteModel.find().where({ is_enable: true });
   return res.json(sites);
 });
 

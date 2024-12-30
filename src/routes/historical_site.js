@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require("passport");
 const {
   createSite,
   getSiteById,
@@ -46,13 +47,34 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-siteRouter.post("/", createSite);
+siteRouter.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  createSite
+);
 siteRouter.get("/enabled", getEnabledSites);
 siteRouter.get("/", getSites);
 siteRouter.get("/:id", getSiteById);
-siteRouter.delete("/:id", deleteSitebyId);
-siteRouter.put("/:id", updateSiteById);
-siteRouter.post("/:id/upload", upload.single("image"), uploadImage);
-siteRouter.delete("/:id/upload", deleteImage);
+siteRouter.delete(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  deleteSitebyId
+);
+siteRouter.put(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  updateSiteById
+);
+siteRouter.post(
+  "/:id/upload",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  uploadImage
+);
+siteRouter.delete(
+  "/:id/upload",
+  passport.authenticate("jwt", { session: false }),
+  deleteImage
+);
 
 module.exports = siteRouter;
