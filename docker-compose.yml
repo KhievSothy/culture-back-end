@@ -22,7 +22,7 @@ services:
     container_name: mongo_db # Set the container name for MongoDB
     image: mongo:latest # Use the official MongoDB image
     ports:
-      - "27017:27017" # Expose MongoDB default port
+      - "27017" # Expose MongoDB default port
     volumes:
       - mongo_data:/data/db # Persist MongoDB data
     networks:
@@ -32,7 +32,7 @@ services:
     image: redis:5
     container_name: redis
     ports:
-      - "6379:6379"
+      - "6379"
     networks:
       - app-network
 
