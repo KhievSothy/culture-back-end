@@ -70,6 +70,7 @@ const allowedOrigins = [
   "http://localhost:8080",
   "https://cambodiaculturalheritage.netlify.app",
   "http://localhost:3000",
+  "https://api-cultural-heritage.naspk.site",
 ];
 const corsOptions = {
   origin: function (origin, callback) {

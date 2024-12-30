@@ -7,6 +7,7 @@ const {
   updateSiteById,
   uploadImage,
   deleteImage,
+  getEnabledSites,
 } = require("../controller/historical_site.js");
 const multer = require("multer");
 const path = require("path");
@@ -46,6 +47,7 @@ const upload = multer({
 });
 
 siteRouter.post("/", createSite);
+siteRouter.get("/enabled", getEnabledSites);
 siteRouter.get("/", getSites);
 siteRouter.get("/:id", getSiteById);
 siteRouter.delete("/:id", deleteSitebyId);
