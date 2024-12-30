@@ -1,3 +1,13 @@
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  // Optionally, log it to a file or monitoring system
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  process.exit(1); // Exit the process after logging the error
+});
+
 require("dotenv").config();
 
 const express = require("express");
