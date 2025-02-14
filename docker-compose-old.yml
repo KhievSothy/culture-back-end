@@ -1,0 +1,49 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    container_name: load-balancer
+    depends_on:
+      - express
+    environment:
+      - NGINX_SERVER_NAME=localhost
+      - EXPRESS_HOST_1=culture-back-end-express-1
+      - EXPRESS_HOST_2=culture-back-end-express-2
+      - EXPRESS_HOST_3=culture-back-end-express-3
+      - EXPRESS_PORT=3000
+      - NGINX_MAX_BODY=100M
+    ports:
+      - 3000:3000
+  express:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # container_name: express
+    # ports:
+    #   - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./index.js:/app/index.js
+      - .env:/app/.env
+      - ./uploads:/app/uploads
+    scale: 3
+    depends_on:
+      - mongodb
+      - redis
+  mongodb:
+    build:
+      context: .
+      dockerfile: Dockerfile-mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/data/db
+  redis:
+    image: redis:latest
+    container_name: cadt-redis
+    ports:
+      - 6379:6379
+volumes:
+  mongodbdata:

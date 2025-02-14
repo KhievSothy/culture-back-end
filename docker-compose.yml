@@ -1,57 +1,56 @@
 services:
-  nginx:
+  backend:
     build:
       context: .
-      dockerfile: Dockerfile-nginx
-    container_name: load-balancer
+    container_name: backend
     depends_on:
-      - express
-    environment:
-      - NGINX_SERVER_NAME=localhost
-      - EXPRESS_HOST_1=culture-back-end-express-1
-      - EXPRESS_HOST_2=culture-back-end-express-2
-      - EXPRESS_HOST_3=culture-back-end-express-3
-      - EXPRESS_PORT=3000
-      - NGINX_MAX_BODY=100M
-    ports:
-      - 3000:3000
-  express:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # container_name: express
-    # ports:
-    #   - "3000:3000"
-    volumes:
-      - ./src:/app/src
-      - ./index.js:/app/index.js
-      - .env:/app/.env
-      - ./uploads:/app/uploads
-    scale: 3
-    depends_on:
-      - mongodb
+      - db
       - redis
-  mongodb:
-    build:
-      context: .
-      dockerfile: Dockerfile-mongo
-    container_name: mongodb
-    ports:
-      - "27017:27017"
     volumes:
-      - mongodbdata:/data/db
-  redis:
-    image: redis:latest
-    container_name: cadt-redis
+      - ./uploads:/app/uploads
+    environment:
+      DB_SERVER: db
+      DB_NAME: cultural_heritage
+      CACHE_SERVER: redis
+      IS_PRODUCTION: "true"
     ports:
-      - 6379:6379
-  # redis-commander:
-  #   image: rediscommander/redis-commander:latest
-  #   environment:
-  #     - REDIS_HOSTS=local:cadt-redis:6379
-  #   ports:
-  #     - "8081:8081"
-  #   depends_on:
-  #     - redis
+      - "3001:3000"
+    networks:
+      - app-network
+
+  db:
+    container_name: mongo_db # Set the container name for MongoDB
+    image: mongo:latest # Use the official MongoDB image
+    ports:
+      - "27017" # Expose MongoDB default port
+    volumes:
+      - mongo_data:/data/db # Persist MongoDB data
+    networks:
+      - app-network # Connect to the same backend network as express-app
+
+  redis:
+    image: redis:5
+    container_name: redis
+    ports:
+      - "6379"
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
 volumes:
-  mongodbdata:
+  mongo_data:
+
+networks:
+  app-network:
+    driver: bridge
