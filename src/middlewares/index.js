@@ -9,6 +9,8 @@ const redisClient = require("../redis");
 const UserModel = require("../models/user");
 const { roles } = require("../models/permission");
 
+require('dotenv').config()
+
 const verifyJWT = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {
@@ -27,6 +29,7 @@ const verifyRefresh = asyncHandler(async (req, res, next) => {
     return res.status(401).json({ message: "Authentication failed" });
   }
   const extract = token.split(" ")[1];
+  console.log(process.env.JWT_REFRESH_SECRET)
   const decoded = jwt.verify(extract, process.env.JWT_REFRESH_SECRET);
   const user = await UserModel.findById(decoded.id);
   // console.log(user)
