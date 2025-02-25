@@ -1,19 +1,19 @@
 const express = require("express");
 const passport = require("passport");
 const {
-  createSite,
-  getSiteById,
-  getSites,
-  deleteSitebyId,
-  updateSiteById,
+  createLost,
+  getLostById,
+  getLosts,
+  deleteLostbyId,
+  updateLostById,
   uploadImage,
   deleteImage,
-  getEnabledSites,
-} = require("../controller/historical_site.js");
+  getEnabledLosts,
+} = require("../controller/lost_artefact.js");
 const multer = require("multer");
 const path = require("path");
 const { randomUUID } = require("crypto");
-const siteRouter = express.Router();
+const lostRouter = express.Router();
 
 // Set storage engine
 const storage = multer.diskStorage({
@@ -47,13 +47,13 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-siteRouter.post("/", passport.authenticate("jwt", { session: false }), createSite);
-siteRouter.get("/enabled", getEnabledSites);
-siteRouter.get("/", getSites);
-siteRouter.get("/:id", getSiteById);
-siteRouter.delete("/:id", passport.authenticate("jwt", { session: false }), deleteSitebyId);
-siteRouter.put("/:id", passport.authenticate("jwt", { session: false }), updateSiteById);
-siteRouter.post("/:id/upload", passport.authenticate("jwt", { session: false }), upload.single("image"), uploadImage);
-siteRouter.delete("/:id/upload", passport.authenticate("jwt", { session: false }), deleteImage);
+lostRouter.post("/", passport.authenticate("jwt", { session: false }),createLost);
+lostRouter.get("/enabled", getEnabledLosts);
+lostRouter.get("/", getLosts);
+lostRouter.get("/:id", getLostById);
+lostRouter.delete("/:id", passport.authenticate("jwt", { session: false }), deleteLostbyId);
+lostRouter.put("/:id", passport.authenticate("jwt", { session: false }), updateLostById);
+lostRouter.post("/:id/upload", passport.authenticate("jwt", { session: false }), upload.single("image"), uploadImage);
+lostRouter.delete("/:id/upload", passport.authenticate("jwt", { session: false }), deleteImage);
 
-module.exports = siteRouter;
+module.exports = lostRouter;

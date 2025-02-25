@@ -27,6 +27,7 @@ const userRouter = require("./src/routes/user.js");
 const siteRouter = require("./src/routes/historical_site.js");
 const artRouter = require("./src/routes/art.js");
 const museumRouter = require("./src/routes/museum.js");
+const lostRouter = require("./src/routes/lost_artefact.js");
 
 const authRouter = require("./src/routes/auth.js");
 const jwtStrategy = require("./src/common/strategy/jwt.js");
@@ -71,6 +72,7 @@ const allowedOrigins = [
   "https://cambodiaculturalheritage.netlify.app",
   "http://localhost:3000",
   "https://api-cultural-heritage.naspk.site",
+  "https://api-cultural-heritage.tcreativestudio.xyz"
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -94,27 +96,16 @@ app.use("/files", passport.authenticate("jwt", { session: false }), fileRouter);
 //app.use(catchMiddleware);
 app.use(catchInterceptor(30 * 60));
 app.use(invalidateInterceptor);
-//app.get('/sites', (req, res) => {res.json({ message: 'CORS enabled!' });});
 
-// Router
-// app.use("/sites", passport.authenticate("jwt", { session: false }), siteRouter);
-app.use(
-  "/events",
-  passport.authenticate("jwt", { session: false }),
-  eventRouter
-);
+app.use("/events", passport.authenticate("jwt", { session: false }), eventRouter);
 app.use("/users", passport.authenticate("jwt", { session: false }), userRouter);
 app.use("/arts", passport.authenticate("jwt", { session: false }), artRouter);
-app.use(
-  "/museums",
-  passport.authenticate("jwt", { session: false }),
-  museumRouter
-);
+app.use("/museums", passport.authenticate("jwt", { session: false }), museumRouter);
 app.use("/historical_sites", siteRouter);
-
+app.use("/lost_artefact", lostRouter);
 app.use("/uploads", express.static("uploads"));
-
 app.use(handleError);
+
 setupSwagger(app);
 
 app.listen(process.env.PORT, function () {

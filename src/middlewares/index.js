@@ -9,11 +9,11 @@ const redisClient = require("../redis");
 const UserModel = require("../models/user");
 const { roles } = require("../models/permission");
 
-<<<<<<< HEAD
+
+
 require('dotenv').config()
-=======
-require("dotenv").config();
->>>>>>> 4c8537f5e978bb79fd46241e542923c7229a5edf
+
+
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization;
