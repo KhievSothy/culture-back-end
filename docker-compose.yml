@@ -37,12 +37,17 @@ services:
       - app-network
 
   nginx:
-    image: nginx:latest
+    image: nginx:1.25.1
     container_name: nginx
     ports:
-      - "80:80"
+      - "80:80" # Public HTTP Port
+      - "443:443" # Public HTTPS Port
+      - "81:81" # Admin Web Port
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#      - /home/ubuntu/nginx-html:/app/public
     depends_on:
       - backend
     networks:

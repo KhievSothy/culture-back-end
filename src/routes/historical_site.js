@@ -53,7 +53,8 @@ siteRouter.get("/", getSites);
 siteRouter.get("/:id", getSiteById);
 siteRouter.delete("/:id", passport.authenticate("jwt", { session: false }), deleteSitebyId);
 siteRouter.put("/:id", passport.authenticate("jwt", { session: false }), updateSiteById);
-siteRouter.post("/:id/upload", passport.authenticate("jwt", { session: false }), upload.single("image"), uploadImage);
+//siteRouter.post("/:id/upload", passport.authenticate("jwt", { session: false }), upload.single("image"), uploadImage);
+siteRouter.post("/:id/upload", passport.authenticate("jwt", { session: false }), upload.array("images", 20), uploadImage);
 siteRouter.delete("/:id/upload", passport.authenticate("jwt", { session: false }), deleteImage);
 
 module.exports = siteRouter;

@@ -29,10 +29,33 @@ const resolveFilePath = (imagePath, isDocker) => {
 /**
  * Create a new historic site.
  */
+// const createSite = asyncHandler(async (req, res) => {
+//   const site = new HistoricSiteModel(req.body);
+//   const result = await site.save();
+//   return res.status(201).json(result);
+// });
 const createSite = asyncHandler(async (req, res) => {
-  const site = new HistoricSiteModel(req.body);
-  const result = await site.save();
-  return res.status(201).json(result);
+
+  try {
+
+    console.log(req.body);
+
+    const site =
+      new HistoricSiteModel(req.body);
+
+    const result =
+      await site.save();
+
+    return res.status(201).json(result);
+
+  } catch (error) {
+
+    console.log(error);
+
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
 });
 
 /**
@@ -64,109 +87,254 @@ const getEnabledSites = asyncHandler(async (req, res) => {
 /**
  * Update a site by ID.
  */
+// const updateSiteById = asyncHandler(async (req, res) => {
+//   const id = req.params.id;
+//   const site = await HistoricSiteModel.findById(id);
+
+//   if (site?.img && validateImagePath(site.img)) {
+//     const isDocker = process.env.IS_PRODUCTION === "true";
+//     const filePath = resolveFilePath(site.img, isDocker);
+
+//     try {
+//       await fsPromises.access(filePath, fs.constants.F_OK);
+//       await fsPromises.unlink(filePath);
+//     } catch (err) {
+//       console.error("File deletion error:", err);
+//     }
+//   }
+
+//   await HistoricSiteModel.updateOne({ _id: id }, req.body);
+//   return res.status(200).json({ message: "Update Successful" });
+// });
 const updateSiteById = asyncHandler(async (req, res) => {
+
   const id = req.params.id;
-  const site = await HistoricSiteModel.findById(id);
-
-  if (site?.img && validateImagePath(site.img)) {
-    const isDocker = process.env.IS_PRODUCTION === "true";
-    const filePath = resolveFilePath(site.img, isDocker);
-
-    try {
-      await fsPromises.access(filePath, fs.constants.F_OK);
-      await fsPromises.unlink(filePath);
-    } catch (err) {
-      console.error("File deletion error:", err);
-    }
+  const result =
+    await HistoricSiteModel.findByIdAndUpdate(
+      id,
+      req.body,
+      { new: true }
+    );
+  if (!result) {
+    return res.status(404).json({
+      message: "Site not found",
+    });
   }
-
-  await HistoricSiteModel.updateOne({ _id: id }, req.body);
-  return res.status(200).json({ message: "Update Successful" });
+  return res.status(200).json({
+    message: "Update Successful",
+    site: result,
+  });
 });
-
 /**
  * Upload an image for a site.
  */
+
 const uploadImage = asyncHandler(async (req, res) => {
   const id = req.params.id;
-
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({
+      message: "No files uploaded",
+    });
   }
-
-  const imagePath = req.file.path;
-  const result = await HistoricSiteModel.findByIdAndUpdate(
-    id,
-    { img: imagePath },
-    { new: true }
+  // create image objects
+  const newImages = req.files.map(
+    (file, index) => ({
+      path: file.path,
+      is_cover: false,
+      order: index,
+      caption: "",
+    })
   );
-
+  // append images
+  const result =
+    await HistoricSiteModel.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          img: {
+            $each: newImages,
+          },
+        },
+      },
+      {
+        new: true,
+      }
+    );
   if (!result) {
-    return res.status(404).json({ message: "Site not found" });
+    return res.status(404).json({
+      message: "Site not found",
+    });
   }
 
-  return res.json({ message: "Image uploaded successfully", site: result });
+  return res.json({
+    message: "Images uploaded successfully",
+    site: result,
+  });
 });
-
+const setCoverImage = asyncHandler(async (req, res) => {
+  const { siteId, imageId } = req.params;
+  await HistoricSiteModel.updateOne(
+    { _id: siteId },
+    {
+      $set: {
+        "img.$[].is_cover": false,
+      },
+    }
+  );
+  await HistoricSiteModel.updateOne(
+    {
+      _id: siteId,
+      "img._id": imageId,
+    },
+    {
+      $set: {
+        "img.$.is_cover": true,
+      },
+    }
+  );
+  res.json({ message: "Cover updated" });
+});
 /**
  * Delete a site by ID.
  */
 const deleteSitebyId = asyncHandler(async (req, res) => {
+
   const id = req.params.id;
-  const site = await HistoricSiteModel.findById(id);
+
+  const site =
+    await HistoricSiteModel.findById(id);
 
   if (!site) {
-    return res.status(404).json({ message: "Historic site not found" });
+
+    return res.status(404).json({
+      message: "Historic site not found",
+    });
   }
 
-  if (site?.img && validateImagePath(site.img)) {
-    const isDocker = process.env.IS_PRODUCTION === "true";
-    const filePath = resolveFilePath(site.img, isDocker);
+  // delete all image files
+  if (
+    site.img &&
+    site.img.length > 0
+  ) {
 
-    try {
-      await fsPromises.access(filePath, fs.constants.F_OK);
-      await fsPromises.unlink(filePath);
-    } catch (err) {
-      console.error("Error deleting image file:", err);
+    const isDocker =
+      process.env.IS_PRODUCTION === "true";
+
+    for (const image of site.img) {
+
+      if (!image.path) continue;
+
+      const filePath =
+        resolveFilePath(
+          image.path,
+          isDocker
+        );
+
+      try {
+
+        await fsPromises.access(
+          filePath,
+          fs.constants.F_OK
+        );
+
+        await fsPromises.unlink(
+          filePath
+        );
+
+      } catch (err) {
+
+        console.error(
+          "Error deleting image file:",
+          err
+        );
+      }
     }
   }
 
   await site.deleteOne();
-  return res.json({ message: "Site deleted successfully", site });
+
+  return res.json({
+    message: "Site deleted successfully",
+    site,
+  });
 });
 
 /**
  * Delete an image associated with a site.
  */
 const deleteImage = asyncHandler(async (req, res) => {
+
   const id = req.params.id;
-  const site = await HistoricSiteModel.findById(id);
+
+  const {
+    imagePath
+  } = req.body;
+
+  const site =
+    await HistoricSiteModel.findById(id);
 
   if (!site) {
-    return res.status(404).json({ message: "Historic site not found" });
+
+    return res.status(404).json({
+      message: "Historic site not found",
+    });
   }
 
-  if (!validateImagePath(site.img)) {
-    return res
-      .status(404)
-      .json({ message: "No image associated with this site" });
+  const image =
+    site.img.find(
+      (img) =>
+        img.path === imagePath
+    );
+
+  if (!image) {
+
+    return res.status(404).json({
+      message: "Image not found",
+    });
   }
 
-  const isDocker = process.env.IS_PRODUCTION === "true";
-  const filePath = resolveFilePath(site.img, isDocker);
+  const isDocker =
+    process.env.IS_PRODUCTION === "true";
+
+  const filePath =
+    resolveFilePath(
+      image.path,
+      isDocker
+    );
 
   try {
-    await fsPromises.access(filePath, fs.constants.F_OK);
-    await fsPromises.unlink(filePath);
 
-    site.img = null;
-    await site.save();
+    await fsPromises.access(
+      filePath,
+      fs.constants.F_OK
+    );
 
-    return res.json({ message: "Image removed successfully", site });
+    await fsPromises.unlink(
+      filePath
+    );
+
   } catch (err) {
-    console.error("File deletion error:", err);
-    return res.status(404).json({ message: "Image file not found" });
+
+    console.error(
+      "File deletion error:",
+      err
+    );
   }
+
+  // remove image from array
+  site.img =
+    site.img.filter(
+      (img) =>
+        img.path !== imagePath
+    );
+
+  await site.save();
+
+  return res.json({
+    message:
+      "Image removed successfully",
+    site,
+  });
 });
 
 module.exports = {
@@ -178,4 +346,5 @@ module.exports = {
   updateSiteById,
   uploadImage,
   deleteImage,
+  setCoverImage,
 };

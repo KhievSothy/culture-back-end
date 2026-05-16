@@ -7,7 +7,7 @@ const siteSchema = new mongoose.Schema({
     is_enable: { type: Boolean, required: true },
     desc_kh: { type: String, required: true },
     desc_en: { type: String, required: true },
-    img: { type: String, default: '' },
+    img: { type: [String], default: '' },
     createdDate: { type: Date, required: true, default: new Date() },
 })
 
