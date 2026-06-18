@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const historicSiteSchema = new mongoose.Schema({
 
   site_number: { type: String, required: true },
-  ik_number: { type: String, required: true },
+  ik_number: { type: String},
   title_kh: { type: String, required: true },
   title_en: { type: String, required: true },
 
@@ -24,7 +24,7 @@ const historicSiteSchema = new mongoose.Schema({
   refernce: { type: String },
   registered_date: { type: Date },
   desc_kh: { type: String, required: true },
-  desc_en: { type: String, required: true },
+  desc_en: { type: String},
 
   is_enable: {type: Boolean, default: true, },
 
