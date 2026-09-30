@@ -13,28 +13,34 @@ services:
       DB_NAME: cultural_heritage
       CACHE_SERVER: redis
       IS_PRODUCTION: "true"
+    ports:
+      - "3001:3000"
     networks:
       - app-network
 
   db:
-    container_name: mongo_db
-    image: mongo:latest
+    container_name: mongo_db # Set the container name for MongoDB
+    image: mongo:latest # Use the official MongoDB image
+    ports:
+      - "27017" # Expose MongoDB default port
     volumes:
-      - mongo_data:/data/db
+      - mongo_data:/data/db # Persist MongoDB data
     networks:
-      - app-network
+      - app-network # Connect to the same backend network as express-app
 
   redis:
     image: redis:5
     container_name: redis
+    ports:
+      - "6379"
     networks:
       - app-network
-      
+
   nginx:
     image: nginx:1.25.1
     container_name: nginx
     ports:
-#     - "80:80" # Public HTTP Port
+      - "80:80" # Public HTTP Port
       - "443:443" # Public HTTPS Port
       - "81:81" # Admin Web Port
     volumes:
