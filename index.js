@@ -71,9 +71,8 @@ const allowedOrigins = [
   "http://localhost:8080",
   "https://cambodiaculturalheritage.netlify.app",
   "http://localhost:3000",
-  "https://api-cultural-heritage.naspk.site",
-  "https://api-cultural-heritage.tcreative.xyz",
-  "http://api-cultural-heritage.tcreative.xyz"
+  "https://api.cchc.dev",
+  "http://api.cchc.dev"
   
 ];
 const corsOptions = {
