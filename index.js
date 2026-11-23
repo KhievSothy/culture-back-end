@@ -22,11 +22,9 @@ const {
   invalidateInterceptor,
 } = require("./src/middlewares/index.js");
 const dbConnect = require("./src/db/db.js");
-const eventRouter = require("./src/routes/event.js");
 const userRouter = require("./src/routes/user.js");
 const siteRouter = require("./src/routes/historical_site.js");
 const artRouter = require("./src/routes/art.js");
-const museumRouter = require("./src/routes/museum.js");
 const lostRouter = require("./src/routes/lost_artefact.js");
 
 const authRouter = require("./src/routes/auth.js");
@@ -98,10 +96,8 @@ app.use("/files", passport.authenticate("jwt", { session: false }), fileRouter);
 app.use(catchInterceptor(30 * 60));
 app.use(invalidateInterceptor);
 
-app.use("/events", passport.authenticate("jwt", { session: false }), eventRouter);
 app.use("/users", passport.authenticate("jwt", { session: false }), userRouter);
 app.use("/arts", passport.authenticate("jwt", { session: false }), artRouter);
-app.use("/museums", passport.authenticate("jwt", { session: false }), museumRouter);
 app.use("/historical_sites", siteRouter);
 app.use("/lost_artefact", lostRouter);
 app.use("/uploads", express.static("uploads"));

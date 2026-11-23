@@ -1,4 +1,4 @@
-FROM node:18.20.4-slim
+FROM node:24-bookworm-slim
 ENV TZ="Asia/Bangkok"
 WORKDIR /app
 COPY package.json package-lock.json ./

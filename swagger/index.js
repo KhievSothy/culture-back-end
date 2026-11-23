@@ -1,45 +1,12 @@
-const swagger = require("swagger-generator-express");
-
-// Define your router here
-
-const options = {
-  title: "Cultural Heritage API",
-  version: "1.0.0",
-  license: {
-    name: "Apache 2.0",
-    url: "https://www.apache.org/licenses/LICENSE-2.0.html",
-  },
-  basePath: "/",
-  schemes: ["http", "https"],
-  securityDefinitions: {
-    Bearer: {
-      description:
-        "Example value:- Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5MmQwMGJhNTJjYjJjM",
-      type: "apiKey",
-      name: "Authorization",
-      in: "header",
-      bearerFormat: "JWT",
-    },
-  },
-  security: [{ Bearer: [] }],
-  defaultSecurity: "Bearer",
-};
-
-/**
- * serveSwagger must be called after defining your router.
- * @param app Express object
- * @param endPoint Swagger path on which swagger UI display
- * @param path.routePath path to folder in which routes files defined.
- * @param path.requestModelPath Optional parameter which is path to folder in which requestModel defined, if not given request params will not display on swagger documentation.
- * @param path.responseModelPath Optional parameter which is path to folder in which responseModel defined, if not given response objects will not display on swagger documentation.
- */
+const swaggerUi = require("swagger-ui-express");
+const openapi = require("./openapi");
 
 function setupSwagger(app) {
-  swagger.serveSwagger(app, "/culture_docs", options, {
-    routePath: "./src/routes/",
-    requestModelPath: "./src/models/request",
-    responseModelPath: "./src/models/response",
-  });
+  app.use(
+    "/culture_docs",
+    swaggerUi.serve,
+    swaggerUi.setup(openapi)
+  );
 }
 
 module.exports = setupSwagger;
