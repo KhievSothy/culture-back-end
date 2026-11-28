@@ -1,35 +1,57 @@
-const { checkSchema } = require('express-validator');
+const { checkSchema } = require("express-validator");
 
 const signUpSchema = checkSchema({
-    email: {
-        isEmail: true,
-        errorMessage: 'Invalid email address',
+  email: {
+    notEmpty: {
+      errorMessage: "Email is required",
     },
-    lastname: {
-        isAlpha: true,
-        errorMessage: 'First name is text only',
+    isEmail: {
+      errorMessage: "Invalid email address",
     },
-    firstname: {
-        isAlpha: true,
-        errorMessage: 'Last name is text only',
-    },
-    password: {
-        isLength: {
-            options: {
-                min: 8
-            }
-        },
-        errorMessage: "Password should be at least 8 characters"
-    },
-    confirmPassword: {
-        custom: {
-            options: async (value, { req }) => {
-                if (value != req.body.password) {
-                    throw new Error("Password mistatched!")
-                }
-            }
-        }
-    }
-})
+    normalizeEmail: true,
+  },
 
-module.exports = { signUpSchema }
+  firstname: {
+    notEmpty: {
+      errorMessage: "First name is required",
+    },
+    isString: true,
+    trim: true,
+    isLength: {
+      options: { min: 1, max: 100 },
+      errorMessage: "First name must be between 1 and 100 characters",
+    },
+  },
+
+  lastname: {
+    notEmpty: {
+      errorMessage: "Last name is required",
+    },
+    isString: true,
+    trim: true,
+    isLength: {
+      options: { min: 1, max: 100 },
+      errorMessage: "Last name must be between 1 and 100 characters",
+    },
+  },
+
+  password: {
+    isLength: {
+      options: { min: 8, max: 128 },
+      errorMessage: "Password must be between 8 and 128 characters",
+    },
+  },
+
+  confirmPassword: {
+    custom: {
+      options: (value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Passwords do not match");
+        }
+        return true;
+      },
+    },
+  },
+});
+
+module.exports = { signUpSchema };

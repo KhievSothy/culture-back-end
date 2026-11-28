@@ -5,7 +5,7 @@ const {
     getArts,
     deleteArtbyId,
     updateArtById
-} = require('../controller/art.js');
+} = require('../controller/artifact.js');
 const artRouter = express.Router();
 
 artRouter.post('/', createArt)

@@ -23,10 +23,9 @@ const {
 } = require("./src/middlewares/index.js");
 const dbConnect = require("./src/db/db.js");
 const userRouter = require("./src/routes/user.js");
-const siteRouter = require("./src/routes/historical_site.js");
-const artRouter = require("./src/routes/art.js");
-const lostRouter = require("./src/routes/lost_artefact.js");
-
+const siteRouter = require("./src/routes/site.js");
+const artRouter = require("./src/routes/artifact.js");
+const lostRouter = require("./src/routes/lost_artifact.js");
 const authRouter = require("./src/routes/auth.js");
 const jwtStrategy = require("./src/common/strategy/jwt.js");
 const redisClient = require("./src/redis/index.js");
@@ -39,25 +38,6 @@ dbConnect().catch((err) => {
   console.log(err);
 });
 redisClient.connect();
-
-// const limiter = rateLimit({
-//     store: new RedisStore({
-//         sendCommand: (...args) => redisClient.sendCommand(args),
-//     }),
-//     windowMs: 1 * 60 * 1000, // 1 minutes
-//     max: 30, // Limit each IP to 100 requests per windowMs
-//     message: { msg: 'Too many requests from this IP, please try again later.' },
-// })
-// // console.log("Restart")
-// const loginLimit = rateLimit({
-//     store: new RedisStore({
-//         sendCommand: (...args) => redisClient.sendCommand(args),
-//     }),
-//     windowMs: 5 * 60 * 1000, // 5 minutes
-//     max: 5, // Limit each IP to 100 requests per windowMs
-//     message: { msg: 'Too many login attampt' },
-// })
-
 passport.use(jwtStrategy);
 
 // app.use(bodyParser.urlencoded())
@@ -86,20 +66,14 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-
-// app.use(logger)
 app.use("/auth", authRouter);
-//app.use('/auth', loginLimit, authRouter)
-//app.use(limiter)
 app.use("/files", passport.authenticate("jwt", { session: false }), fileRouter);
-//app.use(catchMiddleware);
 app.use(catchInterceptor(30 * 60));
 app.use(invalidateInterceptor);
-
 app.use("/users", passport.authenticate("jwt", { session: false }), userRouter);
-app.use("/arts", passport.authenticate("jwt", { session: false }), artRouter);
-app.use("/historical_sites", siteRouter);
-app.use("/lost_artefact", lostRouter);
+app.use("/artifacts", passport.authenticate("jwt", { session: false }), artRouter);
+app.use("/sites", siteRouter);
+app.use("/lost_artifacts", lostRouter);
 app.use("/uploads", express.static("uploads"));
 app.use(handleError);
 

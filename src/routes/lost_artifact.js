@@ -9,7 +9,7 @@ const {
   uploadImage,
   deleteImage,
   getEnabledLosts,
-} = require("../controller/lost_artefact.js");
+} = require("../controller/lost_artifact.js");
 const multer = require("multer");
 const path = require("path");
 const { randomUUID } = require("crypto");

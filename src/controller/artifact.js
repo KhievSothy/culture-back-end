@@ -1,4 +1,4 @@
-const ArtModel = require('../models/art.js')
+const ArtModel = require('../models/artifact.js')
 const asyncHandler = require('express-async-handler')
 const redisClient = require('../redis/index.js')
 
@@ -8,7 +8,7 @@ const redisClient = require('../redis/index.js')
 
 const createArt = asyncHandler(async (req, res) => {
     const art = new ArtModel(req.body)
-    const result = await site.save()
+    const result = await art.save()
     return res.json(result)
 })
 

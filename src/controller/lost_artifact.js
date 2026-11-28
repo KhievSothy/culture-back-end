@@ -1,4 +1,4 @@
-const LostArtefactModel = require("../models/lost_artefact.js");
+const LostArtefactModel = require("../models/lost_artifact.js");
 const asyncHandler = require("express-async-handler");
 const fs = require("fs");
 const path = require("path");

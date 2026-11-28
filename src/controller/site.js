@@ -1,4 +1,4 @@
-const HistoricSiteModel = require("../models/historical_site.js");
+const SiteModel = require("../models/site.js");
 const asyncHandler = require("express-async-handler");
 const fs = require("fs");
 const path = require("path");
@@ -30,7 +30,7 @@ const resolveFilePath = (imagePath, isDocker) => {
  * Create a new historic site.
  */
 // const createSite = asyncHandler(async (req, res) => {
-//   const site = new HistoricSiteModel(req.body);
+//   const site = new SiteModel(req.body);
 //   const result = await site.save();
 //   return res.status(201).json(result);
 // });
@@ -41,7 +41,7 @@ const createSite = asyncHandler(async (req, res) => {
     console.log(req.body);
 
     const site =
-      new HistoricSiteModel(req.body);
+      new SiteModel(req.body);
 
     const result =
       await site.save();
@@ -63,7 +63,7 @@ const createSite = asyncHandler(async (req, res) => {
  */
 const getSiteById = asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const site = await HistoricSiteModel.findById(id);
+  const site = await SiteModel.findById(id);
   return res.json(site);
 });
 
@@ -72,7 +72,7 @@ const getSiteById = asyncHandler(async (req, res) => {
  */
 const getSites = asyncHandler(async (req, res) => {
   const { join } = req.query;
-  const sites = await HistoricSiteModel.find().populate(join);
+  const sites = await SiteModel.find().populate(join);
   return res.json(sites);
 });
 
@@ -80,37 +80,15 @@ const getSites = asyncHandler(async (req, res) => {
  * Get enabled sites.
  */
 const getEnabledSites = asyncHandler(async (req, res) => {
-  const sites = await HistoricSiteModel.find().where({ is_enable: true });
+  const sites = await SiteModel.find().where({ is_enable: true });
   return res.json(sites);
 });
 
-/**
- * Update a site by ID.
- */
-// const updateSiteById = asyncHandler(async (req, res) => {
-//   const id = req.params.id;
-//   const site = await HistoricSiteModel.findById(id);
-
-//   if (site?.img && validateImagePath(site.img)) {
-//     const isDocker = process.env.IS_PRODUCTION === "true";
-//     const filePath = resolveFilePath(site.img, isDocker);
-
-//     try {
-//       await fsPromises.access(filePath, fs.constants.F_OK);
-//       await fsPromises.unlink(filePath);
-//     } catch (err) {
-//       console.error("File deletion error:", err);
-//     }
-//   }
-
-//   await HistoricSiteModel.updateOne({ _id: id }, req.body);
-//   return res.status(200).json({ message: "Update Successful" });
-// });
 const updateSiteById = asyncHandler(async (req, res) => {
 
   const id = req.params.id;
   const result =
-    await HistoricSiteModel.findByIdAndUpdate(
+    await SiteModel.findByIdAndUpdate(
       id,
       req.body,
       { new: true }
@@ -147,7 +125,7 @@ const uploadImage = asyncHandler(async (req, res) => {
   );
   // append images
   const result =
-    await HistoricSiteModel.findByIdAndUpdate(
+    await SiteModel.findByIdAndUpdate(
       id,
       {
         $push: {
@@ -173,7 +151,7 @@ const uploadImage = asyncHandler(async (req, res) => {
 });
 const setCoverImage = asyncHandler(async (req, res) => {
   const { siteId, imageId } = req.params;
-  await HistoricSiteModel.updateOne(
+  await SiteModel.updateOne(
     { _id: siteId },
     {
       $set: {
@@ -181,7 +159,7 @@ const setCoverImage = asyncHandler(async (req, res) => {
       },
     }
   );
-  await HistoricSiteModel.updateOne(
+  await SiteModel.updateOne(
     {
       _id: siteId,
       "img._id": imageId,
@@ -202,7 +180,7 @@ const deleteSitebyId = asyncHandler(async (req, res) => {
   const id = req.params.id;
 
   const site =
-    await HistoricSiteModel.findById(id);
+    await SiteModel.findById(id);
 
   if (!site) {
 
@@ -271,7 +249,7 @@ const deleteImage = asyncHandler(async (req, res) => {
   } = req.body;
 
   const site =
-    await HistoricSiteModel.findById(id);
+    await SiteModel.findById(id);
 
   if (!site) {
 

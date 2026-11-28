@@ -271,7 +271,7 @@ openapi.paths["/files/{id}"] = {
 };
 
 // Historical sites
-openapi.paths["/historical_sites"] = {
+openapi.paths["/sites"] = {
   get: {
     tags: ["Historical Sites"],
     summary: "Get all historical sites",
@@ -286,7 +286,7 @@ openapi.paths["/historical_sites"] = {
   },
 };
 
-openapi.paths["/historical_sites/enabled"] = {
+openapi.paths["/sites/enabled"] = {
   get: {
     tags: ["Historical Sites"],
     summary: "Get enabled historical sites",
@@ -294,7 +294,7 @@ openapi.paths["/historical_sites/enabled"] = {
   },
 };
 
-openapi.paths["/historical_sites/{id}"] = {
+openapi.paths["/sites/{id}"] = {
   parameters: [
     {
       name: "id",
@@ -323,7 +323,7 @@ openapi.paths["/historical_sites/{id}"] = {
   },
 };
 
-openapi.paths["/historical_sites/{id}/upload"] = {
+openapi.paths["/sites/{id}/upload"] = {
   parameters: [
     {
       name: "id",
@@ -371,7 +371,7 @@ openapi.paths["/historical_sites/{id}/upload"] = {
 };
 
 // Lost artefacts
-openapi.paths["/lost_artefact"] = {
+openapi.paths["/lost_artifacts"] = {
   get: {
     tags: ["Lost Artefacts"],
     summary: "Get all lost artefacts",
@@ -393,7 +393,7 @@ openapi.paths["/lost_artefact"] = {
   },
 };
 
-openapi.paths["/lost_artefact/enabled"] = {
+openapi.paths["/lost_artifacts/enabled"] = {
   get: {
     tags: ["Lost Artefacts"],
     summary: "Get enabled lost artefacts",
@@ -401,7 +401,7 @@ openapi.paths["/lost_artefact/enabled"] = {
   },
 };
 
-openapi.paths["/lost_artefact/{id}"] = {
+openapi.paths["/lost_artifacts/{id}"] = {
   parameters: [
     {
       name: "id",
@@ -430,7 +430,7 @@ openapi.paths["/lost_artefact/{id}"] = {
   },
 };
 
-openapi.paths["/lost_artefact/{id}/upload"] = {
+openapi.paths["/lost_artifacts/{id}/upload"] = {
   parameters: [
     {
       name: "id",
